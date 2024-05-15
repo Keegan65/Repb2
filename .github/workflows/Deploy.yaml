@@ -1,0 +1,20 @@
+name: CI/CD Pipeline
+on:
+  workflow_dispatch:
+
+jobs:
+  SonarCloud:
+    uses: MagMutual/git-workflows/.github/workflows/sonar-cloud-java.yml@dev
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  Deploy-To-GKE:
+    if: github.event_name == 'push'
+    uses: MagMutual/git-workflows/.github/workflows/gke-deploy.yml@dev
+    with:
+        GKE_CLUSTER: mag-gke-dev
+        GKE_ZONE: us-east4
+        SERVICE: gcp-salesforce-to-cis
+        java_version: 11
+        ARGO_APP: salesforce
+    secrets: inherit
